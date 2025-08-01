@@ -11,9 +11,9 @@ RUN python3 -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 
 # Upgrade pip and install Python dependencies
-RUN pip install --upgrade pip
-RUN pip install kaitaistruct
-RUN pip install --no-cache-dir fuzzingbook
+RUN /venv/bin/pip install --upgrade pip && \
+    /venv/bin/pip install kaitaistruct Pillow pypng && \
+    /venv/bin/pip install --no-cache-dir fuzzingbook
 
 # Download and install Kaitai Struct Compiler, then clean up
 RUN curl -LO https://github.com/kaitai-io/kaitai_struct_compiler/releases/download/0.10/kaitai-struct-compiler_0.10_all.deb && \
