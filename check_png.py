@@ -10,7 +10,7 @@ def check_kaitai(file_bytes):
     try:
         _ = Png(KaitaiStream(io.BytesIO(file_bytes)))
         return True
-    except (KaitaiStructError, EOFError, ValueError):
+    except Exception:
         return False
 
 def check_pillow(file_bytes):
@@ -18,7 +18,7 @@ def check_pillow(file_bytes):
         with Image.open(io.BytesIO(file_bytes)) as img:
             img.verify()
         return True
-    except (UnidentifiedImageError, OSError):
+    except Exception:
         return False
 
 def check_pypng(file_bytes):
@@ -26,8 +26,7 @@ def check_pypng(file_bytes):
         reader = pypng.Reader(bytes=file_bytes)
         _ = list(reader.read())
         return True
-    except Exception as e:
-        print(f"Error: {e} in PyPNG")
+    except Exception:
         return False
 
 
