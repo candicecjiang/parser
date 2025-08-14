@@ -18,17 +18,22 @@ def fuzz_folder(folder_path, num_mutations=10):
 
     for png_file in png_files:
         with open(png_file, "rb") as f:
-            seed = f.read()
+            seed_bytes = f.read()
 
-        fuzzer = MutationFuzzer([seed])
+        # Convert bytes to latin1 string for MutationFuzzer
+        seed_str = seed_bytes.decode('latin1')
+        fuzzer = MutationFuzzer([seed_str])
 
         for i in range(num_mutations):
-            mutated = fuzzer.fuzz()
+            mutated_str = fuzzer.fuzz()
+            mutated_bytes = mutated_str.encode('latin1')  # back to bytes
+
             results = [
-                check_kaitai(mutated),
-                check_pillow(mutated),
-                check_pypng(mutated)
+                check_kaitai(mutated_bytes),
+                check_pillow(mutated_bytes),
+                check_pypng(mutated_bytes)
             ]
+            # Check for disagreement
             if results.count(results[0]) != len(results):
                 print(f"Mutation {i}: Disagreement! Results: Kaitai={results[0]}, Pillow={results[1]}, PyPNG={results[2]}")
 

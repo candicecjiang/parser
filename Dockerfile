@@ -21,5 +21,5 @@ RUN curl -LO https://github.com/kaitai-io/kaitai_struct_compiler/releases/downlo
     rm kaitai-struct-compiler_0.10_all.deb
 
 # Copy project files into the container
-COPY png.ksy png.py fuzz_png.py flower.jpg /
+COPY png.ksy png.py check_png.py fuzz_png.py flower.jpg /
 COPY png/test.png png/test.png
