@@ -1,9 +1,9 @@
 import sys
 import io
 from kaitaistruct import KaitaiStructError, KaitaiStream
-from png import Png  # Kaitai-generated
+from png_ks import Png  # Kaitai-generated
 from PIL import Image, UnidentifiedImageError   # Pillow
-import png as pypng
+import png as pypng   # PyPNG
 
 
 def check_kaitai(file_bytes):
@@ -26,7 +26,8 @@ def check_pypng(file_bytes):
         reader = pypng.Reader(bytes=file_bytes)
         _ = list(reader.read())
         return True
-    except Exception:
+    except Exception as e:
+        print(f"Error: {e} in PyPNG")
         return False
 
 
