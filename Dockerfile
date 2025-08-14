@@ -22,3 +22,4 @@ RUN curl -LO https://github.com/kaitai-io/kaitai_struct_compiler/releases/downlo
 
 # Copy project files into the container
 COPY png.ksy test.png png.py fuzz_png.py flower.jpg /
+COPY png/test.png png/test.png
