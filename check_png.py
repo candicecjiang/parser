@@ -8,7 +8,10 @@ import png as pypng   # PyPNG
 
 def check_kaitai(file_bytes):
     try:
-        _ = Png(KaitaiStream(io.BytesIO(file_bytes)))
+        png_obj = Png(KaitaiStream(io.BytesIO(file_bytes)))
+        # Sanity check for IHDR chunk existence
+        if not hasattr(png_obj, 'ihdr'):
+            return False
         return True
     except Exception:
         return False
@@ -16,7 +19,7 @@ def check_kaitai(file_bytes):
 def check_pillow(file_bytes):
     try:
         with Image.open(io.BytesIO(file_bytes)) as img:
-            img.verify()
+            img.load()  # Fully decode image to pixel data
         return True
     except Exception:
         return False
@@ -24,7 +27,10 @@ def check_pillow(file_bytes):
 def check_pypng(file_bytes):
     try:
         reader = pypng.Reader(bytes=file_bytes)
-        _ = list(reader.read())
+        width, height, rows, info = reader.read()
+        # Force reading all rows to ensure CRC checks & decompression happen
+        for _ in rows:
+            pass
         return True
     except Exception:
         return False
