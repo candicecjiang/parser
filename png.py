@@ -525,16 +525,16 @@ class Png(KaitaiStruct):
             self.second = self._io.read_u1()
 
 
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) != 2:
-        print("Usage: python png.py <file>")
-        sys.exit(1)
-    filename = sys.argv[1]
-    try:
-        with open(filename, "rb") as f:
-            data = f.read()
-            Png.from_bytes(data)
-        print(f"{filename} is a valid PNG file.")
-    except Exception as e:
-        print(f"{filename} is not a valid PNG file: {e}")
+# if __name__ == "__main__":
+#     import sys
+#     if len(sys.argv) != 2:
+#         print("Usage: python png.py <file>")
+#         sys.exit(1)
+#     filename = sys.argv[1]
+#     try:
+#         with open(filename, "rb") as f:
+#             data = f.read()
+#             Png.from_bytes(data)
+#         print(f"{filename} is a valid PNG file.")
+#     except Exception as e:
+#         print(f"{filename} is not a valid PNG file: {e}")

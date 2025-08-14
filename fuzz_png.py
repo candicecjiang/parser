@@ -1,24 +1,46 @@
+import sys
+import os
+from pathlib import Path
 from fuzzingbook.MutationFuzzer import MutationFuzzer
-import subprocess
+from check_png import check_kaitai, check_pillow, check_pypng
 
-# Read the original PNG file as bytes
-with open("test.png", "rb") as f:
-    seed_bytes = f.read()
 
-# Convert bytes to a string
-seed_str = seed_bytes.decode('latin1')
+def fuzz_folder(folder_path, num_mutations=10):
+    folder = Path(folder_path)
+    if not folder.is_dir():
+        print(f"Error: {folder_path} is not a directory.")
+        sys.exit(1)
 
-# Create a fuzzer with the PNG as the seed
-fuzzer = MutationFuzzer([seed_str])
+    png_files = list(folder.glob("*.png"))
+    if not png_files:
+        print(f"No PNG files found in {folder_path}.")
+        return
 
-# Try 10 mutations
-for i in range(10):  
-    mutated_str = fuzzer.fuzz()
-    mutated_bytes = mutated_str.encode('latin1')
+    for png_file in png_files:
+        with open(png_file, "rb") as f:
+            seed = f.read()
 
-    fname = f"mutated_{i}.png"
-    with open(fname, "wb") as out:
-        out.write(mutated_bytes)
-    # Run your png.py checker on the mutated file
-    result = subprocess.run(["python3", "png.py", fname], capture_output=True, text=True)
-    print(f"Test {i}: {result.stdout.strip()}")
+        fuzzer = MutationFuzzer([seed])
+
+        for i in range(num_mutations):
+            mutated = fuzzer.fuzz()
+            results = [
+                check_kaitai(mutated),
+                check_pillow(mutated),
+                check_pypng(mutated)
+            ]
+            if results.count(results[0]) != len(results):
+                print(f"Mutation {i}: Disagreement! Results: Kaitai={results[0]}, Pillow={results[1]}, PyPNG={results[2]}")
+
+
+def main():
+    if len(sys.argv) != 2:
+        print(f"Usage: {sys.argv[0]} <png-folder>")
+        sys.exit(1)
+
+    folder_path = sys.argv[1]
+    fuzz_folder(folder_path)
+
+
+if __name__ == "__main__":
+    main()
