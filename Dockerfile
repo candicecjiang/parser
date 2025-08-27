@@ -3,7 +3,8 @@ FROM ubuntu:latest
 # Install system packages and clean up
 RUN apt-get update && \
     apt-get install -y curl python3 python3-pip python3-venv graphviz libgraphviz-dev pkg-config \ 
-    python3-dev build-essential cmake g++ zlib1g-dev libgmp-dev&& \ 
+    python3-dev build-essential cmake g++ zlib1g-dev libgmp-dev vim less && \ 
+
     apt-get clean
 
 # Create and activate Python virtual environment
