@@ -1,0 +1,8 @@
+[kaitai]
+binary_path = "../harnesses/png/harness_kaitai.py"
+
+[pypng]
+binary_path = "../harnesses/png/harness_pypng.py"
+
+[pillow]
+binary_path = "../harnesses/png/harness_pillow.py"

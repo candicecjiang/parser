@@ -1,0 +1,12 @@
+error: rustc 1.85.1 is not supported by the following packages:
+  libafl@0.15.4 requires rustc 1.87
+  libafl@0.15.4 requires rustc 1.87
+  libafl@0.15.4 requires rustc 1.87
+  libafl_bolts@0.15.4 requires rustc 1.87
+  libafl_bolts@0.15.4 requires rustc 1.87
+  libafl_bolts@0.15.4 requires rustc 1.87
+  libafl_derive@0.15.4 requires rustc 1.87
+Either upgrade rustc or select compatible dependency versions with
+`cargo update <name>@<current-ver> --precise <compatible-ver>`
+where `<compatible-ver>` is the latest version supporting rustc 1.85.1
+
