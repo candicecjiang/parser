@@ -14,19 +14,14 @@ def check_pillow(file_bytes):
     try:
         with Image.open(io.BytesIO(file_bytes)) as img:
             img.load()  # Fully decode image to pixel data
-        return True
+        return True, "parsed successfully"
 
     except Exception as e:
-        return (False, f"{e}")
+        return False, f"{e}"
 
 # Read the raw bytes from the Fuzzer
 data = sys.stdin.buffer.read()
 
-result = check_pillow(data)
+status, reason = check_pillow(data)
 
-if result is True:
-    print(result)
-else:
-    print(False)
-    error = result[1]
-    sys.stderr.write(f"Pillow error: {error}\n")
+print(f"RESULT: {status} | REASON: {reason}")

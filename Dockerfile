@@ -23,7 +23,7 @@ ENV PATH="/venv/bin:${PATH}"
 
 # Upgrade pip and install Python dependencies
 RUN /venv/bin/pip install --upgrade pip && \
-    /venv/bin/pip install kaitaistruct Pillow pypng crc python-afl watchdog google-genai python-dotenv
+    /venv/bin/pip install kaitaistruct Pillow pypng crc python-afl watchdog google-genai openai anthropic python-dotenv
 
 # Download and install Kaitai Struct Compiler, then clean up
 RUN curl -LO https://github.com/kaitai-io/kaitai_struct_compiler/releases/download/0.11/kaitai-struct-compiler_0.11_all.deb && \
@@ -49,6 +49,9 @@ COPY input/ input/
 # Copy the modular harnesses and make them executable
 COPY harnesses/ harnesses/
 RUN chmod +x harnesses/png/harness_*.py
+
+COPY llm/ llm/
+RUN chmod +x llm/*.py
 
 # Clone all kaitai struct formats, compile what we need into the harnesses folder, then clean up
 RUN git clone https://github.com/kaitai-io/kaitai_struct_formats.git /tmp/formats && \

@@ -64,6 +64,54 @@ impl StdOutDiffObjective {
     }
 }
 
+// impl<EM, I, OT, S> Feedback<EM, I, OT, S> for StdOutDiffObjective
+// where
+//     OT: MatchName,
+// {
+//     fn is_interesting(
+//         &mut self,
+//         _: &mut S,
+//         _: &mut EM,
+//         _: &I,
+//         observers: &OT,
+//         _: &ExitKind,
+//     ) -> Result<bool, Error> {
+//         let mut second_iterator = self.stdout_observer_handles.iter();
+//         second_iterator.next();
+//         Ok(self
+//             .stdout_observer_handles
+//             .iter()
+//             .zip(second_iterator)
+//             .map(|(o1_handle, o2_handle)| {
+//                 match (
+//                     &observers
+//                         .get(&o1_handle)
+//                         .expect("couldn't find stdout observer 1")
+//                         .output,
+//                     &observers
+//                         .get(&o2_handle)
+//                         .expect("couldn't find stdout observer 2")
+//                         .output,
+//                 ) {
+//                     (None, None) => false,
+//                     (Some(_), None) | (None, Some(_)) => true,
+//                     (Some(output1), Some(output2)) => output1 != output2,
+//                 }
+//             })
+//             .any(|x| x))
+//     }
+    
+// }
+
+fn extract_result(output: &[u8]) -> &str {
+    let s = std::str::from_utf8(output).unwrap_or("");
+    s.lines()
+        .find(|line| line.starts_with("RESULT:"))
+        .and_then(|line| line.split('|').next())  // take everything before the '|'
+        .map(|s| s.trim())                          // trim whitespace -> "RESULT: False"
+        .unwrap_or("")
+}
+
 impl<EM, I, OT, S> Feedback<EM, I, OT, S> for StdOutDiffObjective
 where
     OT: MatchName,
@@ -78,29 +126,55 @@ where
     ) -> Result<bool, Error> {
         let mut second_iterator = self.stdout_observer_handles.iter();
         second_iterator.next();
-        Ok(self
-            .stdout_observer_handles
-            .iter()
-            .zip(second_iterator)
-            .map(|(o1_handle, o2_handle)| {
-                match (
-                    &observers
-                        .get(&o1_handle)
-                        .expect("couldn't find stdout observer 1")
-                        .output,
-                    &observers
-                        .get(&o2_handle)
-                        .expect("couldn't find stdout observer 2")
-                        .output,
-                ) {
-                    (None, None) => false,
-                    (Some(_), None) | (None, Some(_)) => true,
-                    (Some(output1), Some(output2)) => output1 != output2,
+
+        let mut any_diff = false;
+        let mut diff_pairs = Vec::new();
+
+        for (o1_handle, o2_handle) in self.stdout_observer_handles.iter().zip(second_iterator) {
+            let o1 = &observers
+                .get(o1_handle)
+                .expect("couldn't find stdout observer 1")
+                .output;
+            let o2 = &observers
+                .get(o2_handle)
+                .expect("couldn't find stdout observer 2")
+                .output;
+
+            let differs = match (o1, o2) {
+                (None, None) => false,
+                (Some(_), None) | (None, Some(_)) => true,
+                (Some(out1), Some(out2)) => {
+                    extract_result(out1) != extract_result(out2)
                 }
-            })
-            .any(|x| x))
+            };
+
+            if differs {
+                any_diff = true;
+                diff_pairs.push((o1_handle.name().to_string(), o2_handle.name().to_string()));
+            }
+        }
+
+        if any_diff {
+            println!("[DIFF] Disagreements found among: {:?}", diff_pairs);
+            println!(
+                "[DIFF] Full outputs from all {} parsers:",
+                self.stdout_observer_handles.len()
+            );
+            for handle in &self.stdout_observer_handles {
+                let output = &observers
+                    .get(handle)
+                    .expect("couldn't find stdout observer")
+                    .output;
+                if let Some(bytes) = output {
+                    println!("  --- {} ---\n{}", handle.name(), String::from_utf8_lossy(bytes));
+                } else {
+                    println!("  --- {} ---\n(no output)", handle.name());
+                }
+            }
+        }
+
+        Ok(any_diff)
     }
-    
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

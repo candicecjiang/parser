@@ -18,16 +18,11 @@ def check_pypng(file_bytes):
         # Force reading all rows to ensure CRC checks & decompression happen
         for _ in rows:
             pass
-        return True
+        return True, "parsed successfully"
 
     except Exception as e:
-        return (False, f"{e}")
+        return False, f"{e}"
     
-result = check_pypng(data)
+status, reason = check_pypng(data)
 
-if result == True:
-    print(result)
-else:
-    print(False)
-    error = result[1]
-    sys.stderr.write(f"Pypng error: {error}\n")
+print(f"RESULT: {status} | REASON: {reason}")

@@ -5,7 +5,7 @@ import subprocess
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import threading
-import llm_clients
+import llm.llm_clients as llm_clients
 
 # --- Configuration ---
 # Pointing directly to your standalone fuzzer harnesses
