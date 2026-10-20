@@ -1,0 +1,16 @@
+--- baseline/PngImagePlugin.py
++++ patched/PngImagePlugin.py
+@@ -1035,8 +1035,12 @@
+ 
+             try:
+                 cid, pos, length = self.png.read()
+-            except (struct.error, SyntaxError):
++            except struct.error:
+                 break
++            except SyntaxError:
++                if ImageFile.LOAD_TRUNCATED_IMAGES:
++                    break
++                raise
+ 
+             if cid == b"IEND":
+                 break

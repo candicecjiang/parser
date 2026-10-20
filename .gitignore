@@ -1,5 +1,6 @@
-results/
+# Rust build
 fuzzer/target/
+
 **/*.rs.bk
 
 __pycache__/
@@ -14,6 +15,9 @@ env/
 .env
 .env.local
 
-.DS_Store
+# macOS
+.DS_Store   
 
 .dockerignore
+
+baselines/

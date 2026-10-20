@@ -1,0 +1,15 @@
+--- baseline/png_ks.py
++++ patched/png_ks.py
+@@ -556,7 +556,12 @@
+             else:
+                 pass
+                 self.body = self._io.read_bytes(self.len)
++            self._io.seek(self._io.pos() - self.len)
++            _crc_data = self._io.read_bytes(self.len)
+             self.crc = self._io.read_u4be()
++            _crc_calc = zlib.crc32(_crc_data, zlib.crc32(self.type_raw)) & 0xFFFFFFFF
++            if self.crc != _crc_calc:
++                raise kaitaistruct.ValidationNotEqualError(_crc_calc, self.crc, self._io, u"/types/chunk/seq/3")
+ 
+ 
+         def _fetch_instances(self):

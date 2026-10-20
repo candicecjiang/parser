@@ -1,0 +1,13 @@
+--- baseline/PngImagePlugin.py
++++ patched/PngImagePlugin.py
+@@ -785,6 +785,10 @@
+             try:
+                 s = self.png.call(cid, pos, length)
+             except EOFError:
++                current_pos = self.fp.tell()
++                self.fp.seek(pos)
++                self.png.crc(cid, ImageFile._safe_read(self.fp, length))
++                self.fp.seek(current_pos)
+                 break
+             except AttributeError:
+                 logger.debug("%r %s %s (unknown)", cid, pos, length)

@@ -1,0 +1,13 @@
+--- baseline/PngImagePlugin.py
++++ patched/PngImagePlugin.py
+@@ -792,7 +792,9 @@
+                 if cid[1:2].islower():
+                     self.private_chunks.append((cid, s))
+ 
+-            self.png.crc(cid, s)
++            self.png.crc(cid, s)  # Verify CRC for the chunk
++        if cid == b'IDAT' or cid == b'fdAT':  # Raise error for incorrect CRC
++            raise SyntaxError('CRC error in IDAT or fdAT chunk')
+ 
+         #
+         # Copy relevant attributes from the PngStream.  An alternative

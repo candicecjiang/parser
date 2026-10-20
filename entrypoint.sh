@@ -1,3 +1,4 @@
 #!/bin/bash
-source /venv/bin/activate	# absolute path
-/bin/sh
+source /venv/bin/activate
+cd /app
+exec bash

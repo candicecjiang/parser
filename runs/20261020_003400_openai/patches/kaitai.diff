@@ -1,0 +1,11 @@
+--- baseline/png_ks.py
++++ patched/png_ks.py
+@@ -557,6 +557,8 @@
+                 pass
+                 self.body = self._io.read_bytes(self.len)
+             self.crc = self._io.read_u4be()
++            if self.crc != zlib.crc32(self.type_raw + self._raw_body) % (1<<32):
++                raise kaitaistruct.ValidationExprError(self.crc, self._io, u'/types/chunk/seq/-1')
+ 
+ 
+         def _fetch_instances(self):

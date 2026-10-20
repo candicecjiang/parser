@@ -52,6 +52,7 @@ RUN chmod +x harnesses/png/harness_*.py
 
 COPY llm/ llm/
 RUN chmod +x llm/*.py
+COPY orchestrator.py .
 
 # Clone all kaitai struct formats, compile what we need into the harnesses folder, then clean up
 RUN git clone https://github.com/kaitai-io/kaitai_struct_formats.git /tmp/formats && \
